@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estudio de Mercado - Precios Merida, Venezuela</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--p:#1a73e8;--pd:#0d47a1;--pl:#4a90d9;--ok:#0d9488;--warn:#f59e0b;--bad:#ef4444;--info:#6366f1;--bg:#f0f4f8;--card:#fff;--t:#1e293b;--m:#64748b;--b:#e2e8f0;--gold:#D4A017;--silver:#A8A8A8;--bronze:#CD7F32}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--t)}
+.header{background:linear-gradient(135deg,#1e3a5f 0%,#1a73e8 50%,#6366f1 100%);color:#fff;padding:2.5rem 2rem 2rem;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:-50%;right:-10%;width:500px;height:500px;background:radial-gradient(circle,rgba(249,139,16,.1) 0%,transparent 70%);border-radius:50%}
+.hi{max-width:1400px;margin:0 auto;position:relative;z-index:1}
+.ht{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.header h1{font-size:2.2rem;font-weight:800;letter-spacing:-.5px}
+.header h1 span{font-weight:300;opacity:.85;font-size:1.4rem}
+.header p{opacity:.85;font-size:.95rem;margin-top:.3rem}
+.hb{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.8rem}
+.sp{padding:.3rem .7rem;border-radius:20px;font-size:.75rem;font-weight:600;border:1px solid rgba(255,255,255,.2)}
+.sp.real{background:rgba(13,148,136,.5);border-color:rgba(13,148,136,.7)}
+.sp.manual{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);opacity:.7}
+.sbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;max-width:1400px;margin:-1.5rem auto 0;padding:0 2rem;position:relative;z-index:2}
+.sc{background:var(--card);border-radius:12px;padding:1.2rem;text-align:center;box-shadow:0 4px 15px rgba(0,0,0,.08);border-top:4px solid var(--p);transition:transform .2s}
+.sc:hover{transform:translateY(-3px)}
+.sc .n{font-size:1.8rem;font-weight:800;color:var(--p)}
+.sc .l{font-size:.75rem;color:var(--m);text-transform:uppercase;letter-spacing:.5px;margin-top:.2rem}
+.sc.ok{border-top-color:var(--ok)}.sc.ok .n{color:var(--ok)}
+.sc.warn{border-top-color:var(--warn)}.sc.warn .n{color:var(--warn)}
+.sc.bad{border-top-color:var(--bad)}.sc.bad .n{color:var(--bad)}
+.sc.info{border-top-color:var(--info)}.sc.info .n{color:var(--info)}
+.ctr{max-width:1400px;margin:0 auto;padding:1.5rem 2rem 2rem}
+.ctrls{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;background:var(--card);padding:1rem 1.2rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:1.5rem}
+.ctrls input,.ctrls select{padding:.6rem 1rem;border:2px solid var(--b);border-radius:8px;font-size:.9rem;transition:border-color .2s;background:#fff}
+.ctrls input{flex:1;min-width:200px}
+.ctrls input:focus,.ctrls select:focus{outline:none;border-color:var(--p)}
+.chips{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.chip{padding:.35rem .7rem;border-radius:20px;font-size:.78rem;border:1.5px solid var(--b);cursor:pointer;background:#fff;transition:all .2s;font-weight:500}
+.chip:hover{border-color:var(--p);background:#f0f7ff}
+.chip.on{background:var(--p);color:#fff;border-color:var(--p)}
+.rk{background:var(--card);border-radius:14px;padding:1.5rem;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:1.5rem}
+.rk h2{font-size:1.2rem;color:var(--p);margin-bottom:1rem}
+.rkg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem}
+.rkc{padding:1rem;border-radius:10px;text-align:center;border:2px solid var(--b);transition:all .2s}
+.rkc:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.rkc .rn{font-size:2rem;font-weight:800}
+.rkc .rnm{font-size:.95rem;font-weight:700;margin:.3rem 0}
+.rkc .rs{font-size:.8rem;color:var(--m)}
+.rkc.g{border-color:var(--gold);background:linear-gradient(135deg,#fff9e6,#fff3cd)}.rkc.g .rn{color:var(--gold)}
+.rkc.s{border-color:var(--silver);background:linear-gradient(135deg,#f8f9fa,#e9ecef)}.rkc.s .rn{color:var(--silver)}
+.rkc.b{border-color:var(--bronze);background:linear-gradient(135deg,#fff5eb,#ffe8d6)}.rkc.b .rn{color:var(--bronze)}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:1.2rem}
+.pc{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);transition:all .25s;border:2px solid transparent}
+.pc:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(0,0,0,.12);border-color:var(--pl)}
+.chd{padding:1rem 1.2rem;display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid #f1f5f9}
+.chd .nm{font-size:1rem;font-weight:700;line-height:1.3;flex:1}
+.chd .ct{font-size:.7rem;background:#f1f5f9;padding:.2rem .5rem;border-radius:4px;margin-top:.3rem;display:inline-block}
+.bdg{padding:.25rem .6rem;border-radius:6px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;margin-left:.5rem}
+.bdg.best{background:#d1fae5;color:#065f46}.bdg.good{background:#dbeafe;color:#1e40af}
+.bdg.ok{background:#fef3c7;color:#92400e}.bdg.exp{background:#fee2e2;color:#991b1b}
+.cb{padding:1rem 1.2rem}
+.pr{display:flex;justify-content:space-between;align-items:center;padding:.55rem .7rem;margin:.3rem 0;border-radius:8px;transition:background .2s}
+.pr:hover{background:#f8fafc}
+.pr.best{background:#d1fae5;border-left:3px solid var(--ok)}
+.pr.worst{background:#fee2e2;border-left:3px solid var(--bad)}
+.pr .st{font-size:.85rem;color:var(--m);font-weight:500}
+.pr .p{font-weight:700;font-size:1.05rem}
+.pr.best .p{color:var(--ok)}.pr.worst .p{color:var(--bad)}
+.pr.manual{background:#ede9fe;border-left:3px solid var(--info)}
+.pr.manual .st::after{content:' ✏️';font-size:.7rem}
+.pr.empty{background:#fefce8;border-left:3px solid var(--warn);opacity:.7}
+.pr.empty .st{color:var(--warn);font-style:italic}
+.sv{margin:.8rem 0 .3rem;padding:.7rem;background:#f8fafc;border-radius:8px;display:flex;justify-content:space-between;align-items:center}
+.sv .pct{font-size:.85rem;font-weight:700}
+.sv .pct.pos{color:var(--ok)}.sv .pct.neg{color:var(--bad)}.sv .pct.neu{color:var(--warn)}
+.sv .dt{font-size:.75rem;color:var(--m)}
+.cf{padding:.7rem 1.2rem;background:#f8fafc;border-top:1px solid #f1f5f9;display:flex;justify-content:space-between;font-size:.78rem;color:var(--m)}
+.crw{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem}
+.cc{background:var(--card);border-radius:14px;padding:1.2rem;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.cc h3{font-size:1rem;font-weight:700;color:var(--p);margin-bottom:.8rem;text-align:center}
+.cc canvas{max-height:300px}
+.nr{text-align:center;padding:4rem 2rem;color:var(--m);background:var(--card);border-radius:14px}
+.ft{text-align:center;padding:2rem;color:var(--m);font-size:.8rem}
+.ft strong{color:var(--p)}
+.legend{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;padding:.8rem 1rem;background:var(--card);border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.legend-item{display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:var(--m)}
+.legend-dot{width:12px;height:12px;border-radius:3px}
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+.modal-overlay.active{display:flex}
+.modal{background:#fff;border-radius:16px;padding:2rem;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal h2{font-size:1.3rem;color:var(--p);margin-bottom:.3rem}
+.modal .sub{color:var(--m);font-size:.85rem;margin-bottom:1.2rem}
+.modal label{display:block;font-size:.85rem;font-weight:600;color:var(--t);margin-top:.8rem;margin-bottom:.3rem}
+.modal select,.modal input[type=number]{width:100%;padding:.6rem .8rem;border:2px solid var(--b);border-radius:8px;font-size:.9rem}
+.modal select:focus,.modal input:focus{outline:none;border-color:var(--p)}
+.modal .btns{display:flex;gap:.8rem;margin-top:1.2rem}
+.modal button{flex:1;padding:.7rem;border:none;border-radius:8px;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .2s}
+.modal .save{background:var(--p);color:#fff}.modal .save:hover{background:var(--pd)}
+.modal .cancel{background:#f1f5f9;color:var(--t)}.modal .cancel:hover{background:#e2e8f0}
+.modal .clear{background:#fee2e2;color:#991b1b;font-size:.8rem;flex:0;padding:.5rem .8rem;margin-top:.5rem}
+.fab{position:fixed;bottom:2rem;right:2rem;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--info));color:#fff;border:none;font-size:1.5rem;cursor:pointer;box-shadow:0 4px 20px rgba(26,115,232,.4);z-index:100;transition:all .2s}
+.fab:hover{transform:scale(1.1)}
+@media(max-width:900px){.pgrid{grid-template-columns:1fr}.crw{grid-template-columns:1fr}.header h1{font-size:1.6rem}.sbar{grid-template-columns:repeat(2,1fr)}.ctr{padding:1rem}.fab{bottom:1rem;right:1rem;width:50px;height:50px;font-size:1.2rem}}
+</style>
+</head>
+<body>
+<div class="header"><div class="hi"><div class="ht"><div>
+<h1>Estudio de Mercado <span>| Merida, Venezuela</span></h1>
+<p>Analisis comparativo de precios - Tiendas de electronica y electrodomesticos</p>
+<div class="hb">
+<span class="sp real">✓ LatinBien (Real)</span>
+<span class="sp real">✓ Damasco (Real)</span>
+<span class="sp real">✓ Multimax (Real)</span>
+<span class="sp real">✓ MegaTecno (Real)</span>
+<span class="sp real">✓ IVOO (Real)</span>
+<span class="sp manual">✏️ SoyTechno (403)</span>
+<span class="sp manual">✏️ Frigilux (catalogo - sin precios)</span>
+<span class="sp manual">✏️ MercadoLibre (login)</span>
+</div>
+</div><div style="text-align:right"><div style="font-size:.8rem;opacity:.7">Actualizado</div><div style="font-size:1rem;font-weight:600">Ago 2026</div></div>
+</div></div></div>
+
+<div class="sbar" id="sbar"></div>
+<div class="ctr">
+<div class="ctrls">
+<input type="text" id="si" placeholder="Buscar producto, marca o tienda..." oninput="filter()">
+<select id="cf" onchange="filter()"><option value="">Todas las categorias</option></select>
+<select id="sf" onchange="filter()"><option value="">Todas las tiendas</option></select>
+<select id="so" onchange="filter()">
+<option value="sd">Mayor ahorro</option><option value="sa">Menor ahorro</option>
+<option value="pa">Menor precio</option><option value="pd">Mayor precio</option>
+<option value="nm">Nombre A-Z</option>
+<option value="ta">Mas tiendas</option><option value="td">Menos tiendas</option>
+</select>
+</div>
+<div class="chips" id="chips"></div>
+<div class="legend">
+<div class="legend-item"><div class="legend-dot" style="background:#d1fae5;border:1px solid #065f46"></div>Precio scrapeado real</div>
+<div class="legend-item"><div class="legend-dot" style="background:#ede9fe;border:1px solid #6366f1"></div>Precio manual (ingresado)</div>
+<div class="legend-item"><div class="legend-dot" style="background:#fefce8;border:1px solid #f59e0b"></div>Sin precio (ingresalo ✏️)</div>
+</div>
+<div class="rk"><h2>Ranking de Tiendas - Quien gana mas veces?</h2><div class="rkg" id="rkg"></div></div>
+<div class="crw"><div class="cc"><h3>Tienda Mas Economica por Categoria</h3><canvas id="c1"></canvas></div>
+<div class="cc"><h3>Distribucion de Mejores Precios</h3><canvas id="c2"></canvas></div></div>
+<div class="pgrid" id="grid"></div>
+<div class="nr" id="nr" style="display:none"><h2>No se encontraron productos</h2><p>Intenta con otro termino</p></div>
+</div>
+<div class="ft"><p><strong>Estudio de Mercado Merida</strong> | Precios reales scrapeados - Ago 2026</p><p>Precios en USD. LatinBien, Damasco, Multimax, MegaTecno e IVOO scrapeados directamente. SoyTechno, Frigilux y MercadoLibre: precios manuales.</p></div>
+
+<button class="fab" onclick="openModal()" title="Ingresar precios manualmente">✏️</button>
+
+<div class="modal-overlay" id="modalOverlay">
+<div class="modal">
+<h2>✏️ Ingresar Precio Manual</h2>
+<p class="sub">Precios de tiendas que no se pueden scrappear automaticamente</p>
+<label>Producto</label>
+<select id="mProduct"></select>
+<label>Tienda</label>
+<select id="mStore">
+<option value="SoyTechno">SoyTechno</option>
+<option value="Frigilux">Frigilux</option>
+<option value="MercadoLibre">MercadoLibre</option>
+</select>
+<label>Precio (USD)</label>
+<input type="number" id="mPrice" step="0.01" min="0" placeholder="Ej: 299.99">
+<div class="btns">
+<button class="cancel" onclick="closeModal()">Cancelar</button>
+<button class="save" onclick="saveManual()">Guardar Precio</button>
+</div>
+<button class="clear" onclick="clearAllManual()">🗑️ Borrar todos los precios manuales</button>
+</div>
+</div>
+
+<script>
+// ============================================
+// TODOS LOS PRECIOS REALES - Scrapeados Ago 2026
+// ============================================
+const RAW = [
+  // === LATINBIEN (Scrapeados de latinbienti-sys.github.io/shop) ===
+  {n:"iPhone 17 Pro Max 256GB eSIM", cat:"Telefonos", b:"Apple", prices:{LatinBien:2106.08}},
+  {n:"iPhone 17 Pro Max 256GB (1SIM+eSIM)", cat:"Telefonos", b:"Apple", prices:{LatinBien:2588.13}},
+  {n:"iPhone 16 128GB (1SIM+eSIM)", cat:"Telefonos", b:"Apple", prices:{LatinBien:1340.09}},
+  {n:"iPhone 14 eSIM 512GB", cat:"Telefonos", b:"Apple", prices:{LatinBien:1484.65}},
+  {n:"Samsung Galaxy A16 5G 8GB/256GB", cat:"Telefonos", b:"Samsung", prices:{LatinBien:252.73}},
+  {n:"Xiaomi Redmi Note 15 Pro+ 5G 8GB/256GB", cat:"Telefonos", b:"Xiaomi", prices:{LatinBien:653.66}},
+  {n:"Honor X8d 6.77\" 8GB/256GB", cat:"Telefonos", b:"Honor", prices:{LatinBien:595.94}},
+  {n:"Tecno Spark 50 4GB/256GB", cat:"Telefonos", b:"Tecno", prices:{LatinBien:241.81}},
+  {n:"Infinix Hot 70 8GB/256GB", cat:"Telefonos", b:"Infinix", prices:{LatinBien:404.05}},
+  {n:"Xiaomi 17 12GB/512GB", cat:"Telefonos", b:"Xiaomi", prices:{LatinBien:1558.50}},
+  {n:"Aiwa 32\" HD Smart TV", cat:"Televisores", b:"Aiwa", prices:{LatinBien:232.45}},
+  {n:"Aiwa 55\" QLED 4K Google TV", cat:"Televisores", b:"Aiwa", prices:{LatinBien:653.66}},
+  {n:"Samsung 22\" FHD LED", cat:"Televisores", b:"Samsung", prices:{LatinBien:216.68}},
+  {n:"Samsung 28\" UR55 4K UHD", cat:"Televisores", b:"Samsung", prices:{LatinBien:595.49}},
+  {n:"Samsung 32\" Curved FHD", cat:"Televisores", b:"Samsung", prices:{LatinBien:466.46}},
+  {n:"Laptop HP Pavilion 16\" Ryzen 7 16GB/512GB", cat:"Laptops", b:"HP", prices:{LatinBien:1076.44}},
+  {n:"Laptop HP 15\" Ryzen 5 8GB/256GB", cat:"Laptops", b:"HP", prices:{LatinBien:1028.08}},
+  {n:"Laptop HP 15\" i3 8GB/256GB", cat:"Laptops", b:"HP", prices:{LatinBien:887.67}},
+  {n:"HP 15-fd0133wm i3 8GB/256GB", cat:"Laptops", b:"HP", prices:{LatinBien:669.26}},
+  {n:"Laptop Lenovo V14 i7 16GB/512GB", cat:"Laptops", b:"Lenovo", prices:{LatinBien:1215.28}},
+  {n:"Dell Inspiron 15 Ryzen 7 16GB/1TB", cat:"Laptops", b:"Dell", prices:{LatinBien:1519.10}},
+  {n:"Nintendo Switch OLED", cat:"Consolas", b:"Nintendo", prices:{LatinBien:700.47}},
+  {n:"Xbox Series X 1TB", cat:"Consolas", b:"Xbox", prices:{LatinBien:1071.42}},
+  {n:"EcoFlow River 2 Max", cat:"Energia", b:"EcoFlow", prices:{LatinBien:826.83}},
+  {n:"Ninja Air Fryer Max XL", cat:"Cocinas", b:"Ninja", prices:{LatinBien:247.41}},
+  {n:"Fujifilm Instax Mini 12", cat:"Fotografia", b:"Fujifilm", prices:{LatinBien:250.56}},
+  {n:"Aiwa Aire Acondicionado 18K BTU Split", cat:"Aires AC", b:"Aiwa", prices:{LatinBien:753.51}},
+  {n:"Aiwa Aire Acondicionado 12K BTU Split", cat:"Aires AC", b:"Aiwa", prices:{LatinBien:544.46}},
+  {n:"Aiwa Aire Ventana 12K BTU", cat:"Aires AC", b:"Aiwa", prices:{LatinBien:419.66}},
+  {n:"Salcar Aire Acondicionado 12K BTU", cat:"Aires AC", b:"Salcar", prices:{LatinBien:397.81}},
+  {n:"Nevera GPlus Ejecutiva", cat:"Neveras", b:"GPlus", prices:{LatinBien:358.81}},
+  {n:"Nevera GPLUS 93L", cat:"Neveras", b:"GPlus", prices:{LatinBien:416.53}},
+  {n:"Congelador Aiwa 198L", cat:"Neveras", b:"Aiwa", prices:{LatinBien:400.93}},
+  {n:"Nevera TCL 210L", cat:"Neveras", b:"TCL", prices:{LatinBien:580.34}},
+  {n:"Bicicleta SPZ Rockhopper Sport", cat:"Deportes", b:"SPZ", prices:{LatinBien:1230.04}},
+  {n:"Bicicleta SPZ Rockhopper Expert", cat:"Deportes", b:"SPZ", prices:{LatinBien:2250.08}},
+  {n:"Motocicleta Bel KEIKO 150cc", cat:"Automotriz", b:"Bel", prices:{LatinBien:1526.45}},
+  {n:"Mouse Inalambrico", cat:"Accesorios", b:"Generico", prices:{LatinBien:9.36}},
+
+  // === DAMASCO (damascovzla.com - Scrapeados Ago 2026) ===
+  {n:"Nevera Damasco Side by Side 46\" DCRS46WS", cat:"Neveras", b:"Damasco", prices:{Damasco:1235.01}},
+  {n:"Nevera French Door Damasco DCRS52W 518L", cat:"Neveras", b:"Damasco", prices:{Damasco:1215.00}},
+  {n:"Nevera Damasco DCRT33WXW 338L c/Dispensador", cat:"Neveras", b:"Damasco", prices:{Damasco:845.00}},
+  {n:"Nevera Damasco DC187 187L Compacta", cat:"Neveras", b:"Damasco", prices:{Damasco:440.00}},
+  {n:"Nevera Ejecutiva Damasco DCRA05", cat:"Neveras", b:"Damasco", prices:{Damasco:190.00}},
+  {n:"Refrigerador Damasco TMD-213V", cat:"Neveras", b:"Damasco", prices:{Damasco:555.00}},
+  {n:"TV Samsung BUSINESS 32\" LH32BE", cat:"Televisores", b:"Samsung", prices:{Damasco:295.00}},
+  {n:"TV Samsung 32\" UN32T4300AP Smart", cat:"Televisores", b:"Samsung", prices:{Damasco:365.01}},
+  {n:"TV Damasco 50\" 50GF6U", cat:"Televisores", b:"Damasco", prices:{Damasco:415.00}},
+  {n:"TV Damasco 43\" 43GF6S", cat:"Televisores", b:"Damasco", prices:{Damasco:285.00}},
+  {n:"TV Damasco 32\" 32GF6S", cat:"Televisores", b:"Damasco", prices:{Damasco:170.00}},
+  {n:"TV Damasco 55\" 55GF6U", cat:"Televisores", b:"Damasco", prices:{Damasco:440.00}},
+  {n:"TV Damasco 58\" 58GF6U", cat:"Televisores", b:"Damasco", prices:{Damasco:485.00}},
+  {n:"TV Damasco 40\" 40GF6S", cat:"Televisores", b:"Damasco", prices:{Damasco:250.00}},
+  {n:"A/A Ventana Damasco 5K BTU 110V", cat:"Aires AC", b:"Damasco", prices:{Damasco:165.00}},
+  {n:"A/A Ventana Damasco 8K BTU 110V", cat:"Aires AC", b:"Damasco", prices:{Damasco:205.00}},
+  {n:"Laptop Damasco 15.6\" I5 8+512GB", cat:"Laptops", b:"Damasco", prices:{Damasco:539.75}},
+  {n:"Laptop Damasco 15.6\" I3 16+512GB", cat:"Laptops", b:"Damasco", prices:{Damasco:705.50}},
+  {n:"Tablet Damasco 10.36\" 6+128GB", cat:"Tablets", b:"Damasco", prices:{Damasco:148.75}},
+  {n:"Router Damasco CF-WR613N", cat:"Routers", b:"Damasco", prices:{Damasco:17.00}},
+  {n:"Camara Seguridad Damasco U11Q/D", cat:"Seguridad", b:"Damasco", prices:{Damasco:25.50}},
+  {n:"Corneta Damasco DA+CO 20W", cat:"Audio", b:"Damasco", prices:{Damasco:40.80}},
+
+  // === MULTIMAX (multimax.com.ve - Scrapeados Ago 2026) ===
+  // Televisores
+  {n:"TV ITOK Smart HD 32\"", cat:"Televisores", b:"ITOK", prices:{Multimax:109.98}},
+  {n:"TV Westinghouse Smart LED HD 32\"", cat:"Televisores", b:"Westinghouse", prices:{Multimax:119.99}},
+  {n:"TV CLX Smart QLED HD 32\" WhaleOS", cat:"Televisores", b:"CLX", prices:{Multimax:129.99}},
+  {n:"TV Keyton Smart HD 32\"", cat:"Televisores", b:"Keyton", prices:{Multimax:129.99}},
+  {n:"TV Westinghouse Smart 32\" WhaleOS", cat:"Televisores", b:"Westinghouse", prices:{Multimax:139.99}},
+  {n:"TV Magnavox Smart LED HD 32\" WhaleOS", cat:"Televisores", b:"Magnavox", prices:{Multimax:139.99}},
+  {n:"TV RCA Smart 32\" Roku", cat:"Televisores", b:"RCA", prices:{Multimax:149.99}},
+  {n:"TV Kodak Smart HD 32\" WhaleOS", cat:"Televisores", b:"Kodak", prices:{Multimax:149.99}},
+  {n:"TV Toshiba Smart DLED HD 32\"", cat:"Televisores", b:"Toshiba", prices:{Multimax:169.99}},
+  {n:"TV SJ Electronics Smart HD 32\"", cat:"Televisores", b:"SJ Electronics", prices:{Multimax:169.99}},
+  {n:"TV Samsung Smart HD 32\"", cat:"Televisores", b:"Samsung", prices:{Multimax:187.99}},
+  {n:"TV JVC LED HD 32\" Android TV", cat:"Televisores", b:"JVC", prices:{Multimax:199.98}},
+  {n:"TV CLX Smart QLED FHD 40\" WhaleOS", cat:"Televisores", b:"CLX", prices:{Multimax:199.98}},
+  {n:"TV Kodak HD 40\" WhaleOS", cat:"Televisores", b:"Kodak", prices:{Multimax:219.98}},
+  {n:"TV Westinghouse LED FHD 40\" Roku", cat:"Televisores", b:"Westinghouse", prices:{Multimax:219.98}},
+  {n:"TV RCA QLED 40\" Roku", cat:"Televisores", b:"RCA", prices:{Multimax:239.98}},
+  {n:"TV Westinghouse Smart FHD 43\"", cat:"Televisores", b:"Westinghouse", prices:{Multimax:279.99}},
+  {n:"TV JVC QLED FHD 50\" Google TV", cat:"Televisores", b:"JVC", prices:{Multimax:429.99}},
+  {n:"TV Magnavox Smart LED 4K 55\"", cat:"Televisores", b:"Magnavox", prices:{Multimax:449.99}},
+  {n:"TV Vetrux Smart QLED 4K 43\"", cat:"Televisores", b:"Vetrux", prices:{Multimax:455.00}},
+  {n:"TV Westinghouse Smart 4K 55\"", cat:"Televisores", b:"Westinghouse", prices:{Multimax:499.98}},
+  {n:"TV RCA Smart QLED 4K 58\" Roku", cat:"Televisores", b:"RCA", prices:{Multimax:499.98}},
+  {n:"TV Samsung Mini LED 4K 50\" Vision AI", cat:"Televisores", b:"Samsung", prices:{Multimax:540.99}},
+  {n:"TV Vetrux Smart QLED 4K 50\"", cat:"Televisores", b:"Vetrux", prices:{Multimax:570.00}},
+  {n:"TV Magnavox Smart LED 4K 65\"", cat:"Televisores", b:"Magnavox", prices:{Multimax:589.99}},
+  {n:"TV Tesla QLED 4K 50\" Google TV", cat:"Televisores", b:"Tesla", prices:{Multimax:616.00}},
+  {n:"TV RCA Smart 4K 65\" Google TV", cat:"Televisores", b:"RCA", prices:{Multimax:639.98}},
+  {n:"TV JVC LED 4K 65\" Google TV", cat:"Televisores", b:"JVC", prices:{Multimax:649.98}},
+  // Refrigeración
+  {n:"Vinera Condesa 44L Analógica", cat:"Neveras", b:"Condesa", prices:{Multimax:169.99}},
+  {n:"Nevera Ejecutiva Frigilux 44L", cat:"Neveras", b:"Frigilux", prices:{Multimax:213.00}},
+  {n:"Nevera Ejecutiva Condesa Acero", cat:"Neveras", b:"Condesa", prices:{Multimax:229.98}},
+  {n:"Nevera Ejecutiva Frigilux 67L", cat:"Neveras", b:"Frigilux", prices:{Multimax:261.00}},
+  {n:"Refrigerador SJ Electronics 208L Acero", cat:"Neveras", b:"SJ Electronics", prices:{Multimax:499.98}},
+  {n:"Refrigerador 248L Top Freezer", cat:"Neveras", b:"Generico", prices:{Multimax:679.99}},
+  {n:"Refrigerador Top Freezer LG 200L", cat:"Neveras", b:"LG", prices:{Multimax:399.99}},
+  {n:"Refrigerador Top Mount Hisense 205L", cat:"Neveras", b:"Hisense", prices:{Multimax:319.99}},
+  // Aires AC
+  {n:"A/C Ventana Well 5000BTU 110V", cat:"Aires AC", b:"Well", prices:{Multimax:109.98}},
+  {n:"A/C Ventana 6000BTU", cat:"Aires AC", b:"Generico", prices:{Multimax:116.00}},
+  {n:"A/C Ventana TCL 5000BTU", cat:"Aires AC", b:"TCL", prices:{Multimax:144.99}},
+  {n:"A/C Ventana Milatti 6000BTU", cat:"Aires AC", b:"Milatti", prices:{Multimax:149.99}},
+  {n:"A/C Split Milatti 13000BTU 220V", cat:"Aires AC", b:"Milatti", prices:{Multimax:199.98}},
+  {n:"A/C Split Condesa 13000BTU 220V", cat:"Aires AC", b:"Condesa", prices:{Multimax:249.99}},
+  {n:"A/C Split RCA 12000BTU", cat:"Aires AC", b:"RCA", prices:{Multimax:299.99}},
+  {n:"A/C Split Keyton 12000BTU", cat:"Aires AC", b:"Keyton", prices:{Multimax:309.99}},
+  {n:"A/C Split Frigilux 12000BTU", cat:"Aires AC", b:"Frigilux", prices:{Multimax:399.99}},
+  {n:"A/C Split Frigilux Freestyle 18000BTU", cat:"Aires AC", b:"Frigilux", prices:{Multimax:652.00}},
+  {n:"A/C Split Smart Inverter 25000BTU", cat:"Aires AC", b:"Generico", prices:{Multimax:589.99}},
+  // Lavadoras
+  {n:"Lavadora Doble Tina 8Kg Hitech", cat:"Lavadoras", b:"Hitech", prices:{Multimax:119.98}},
+  {n:"Lavadora Doble Tina 7Kg", cat:"Lavadoras", b:"Generico", prices:{Multimax:156.00}},
+  {n:"Lavadora Doble Tina 8Kg", cat:"Lavadoras", b:"Generico", prices:{Multimax:156.00}},
+  {n:"Lavadora Automática Condesa 10Kg", cat:"Lavadoras", b:"Condesa", prices:{Multimax:249.99}},
+  {n:"Lavadora Automática Frigidaire 18Kg", cat:"Lavadoras", b:"Frigidaire", prices:{Multimax:789.98}},
+  {n:"Lavadora Whirlpool 18Kg Xpert System", cat:"Lavadoras", b:"Whirlpool", prices:{Multimax:759.99}},
+  // Tecnología
+  {n:"Honor Play10 4GB+128GB", cat:"Telefonos", b:"Honor", prices:{Multimax:151.98}},
+  {n:"Samsung Galaxy A17 4/128GB", cat:"Telefonos", b:"Samsung", prices:{Multimax:211.99}},
+  {n:"Monitor Samsung 24\" Essential S3", cat:"Monitores", b:"Samsung", prices:{Multimax:152.98}},
+  {n:"Monitor Samsung 24\" Essential S3 GD", cat:"Monitores", b:"Samsung", prices:{Multimax:164.99}},
+  {n:"Monitor Samsung Curvo 24\" Essential S3", cat:"Monitores", b:"Samsung", prices:{Multimax:234.00}},
+  {n:"Monitor Samsung Odyssey 24\"", cat:"Monitores", b:"Samsung", prices:{Multimax:246.99}},
+  {n:"Honor X7D 8GB+256GB", cat:"Telefonos", b:"Honor", prices:{Multimax:323.99}},
+  {n:"Samsung Galaxy A27 5G 8GB/256GB", cat:"Telefonos", b:"Samsung", prices:{Multimax:399.99}},
+  {n:"Samsung Galaxy A37 8/256GB", cat:"Telefonos", b:"Samsung", prices:{Multimax:458.99}},
+  {n:"Samsung Galaxy A57 5G 12GB/512GB", cat:"Telefonos", b:"Samsung", prices:{Multimax:705.99}},
+  {n:"Impresora HP Smart Tank 580", cat:"Impresoras", b:"HP", prices:{Multimax:299.99}},
+  {n:"Monitor Samsung Smart M50C 27\"", cat:"Monitores", b:"Samsung", prices:{Multimax:470.99}},
+
+  // === MEGATECNO (megatecno.com.ve - Scrapeados Ago 2026) ===
+  {n:"Laptop Asus Vivobook 15.6\" I5-1235U 8GB/512GB", cat:"Laptops", b:"Asus", prices:{MegaTecno:599.99}},
+  {n:"Laptop Asus Vivobook 15.6\" I3-N305 8GB/512GB", cat:"Laptops", b:"Asus", prices:{MegaTecno:439.99}},
+  {n:"Laptop HP Portatil I5-1135G7 8GB/256GB", cat:"Laptops", b:"HP", prices:{MegaTecno:549.99}},
+  {n:"Laptop Lenovo IdeaPad 1 Pentium 4GB/128GB", cat:"Laptops", b:"Lenovo", prices:{MegaTecno:339.99}},
+  {n:"Portatil Acer AGo 15\" I3-N355 16GB/512GB", cat:"Laptops", b:"Acer", prices:{MegaTecno:439.99}},
+  {n:"Laptop Asus Vivobook 15.6\" I7-1255U 16GB/1TB", cat:"Laptops", b:"Asus", prices:{MegaTecno:899.99}},
+  {n:"Monitor Acer Nitro ED240Q-S Curvo 23.6\"", cat:"Monitores", b:"Acer", prices:{MegaTecno:259.99}},
+  {n:"Monitor Acer Nitro VG240Y 23.8\"", cat:"Monitores", b:"Acer", prices:{MegaTecno:229.99}},
+  {n:"Monitor Hikvision 18.5\" Full HD", cat:"Monitores", b:"Hikvision", prices:{MegaTecno:94.99}},
+  {n:"Monitor Hikvision 21.5\" Full HD", cat:"Monitores", b:"Hikvision", prices:{MegaTecno:99.99}},
+  {n:"Monitor Samsung Curvo 24\" LED", cat:"Monitores", b:"Samsung", prices:{MegaTecno:165.99}},
+  {n:"Router Linksys MR20MS Wifi 6 AX2200", cat:"Routers", b:"Linksys", prices:{MegaTecno:59.99}},
+  {n:"Router Linksys Velop Home Mesh AC1300 3PK", cat:"Routers", b:"Linksys", prices:{MegaTecno:89.99}},
+  {n:"Router Linksys Hydra Pro 6 AX5400", cat:"Routers", b:"Linksys", prices:{MegaTecno:69.99}},
+  {n:"Router Mercusys MR70X Wifi 6 AX1800", cat:"Routers", b:"Mercusys", prices:{MegaTecno:65.99}},
+  {n:"Impresora Epson EcoTank L3250", cat:"Impresoras", b:"Epson", prices:{MegaTecno:279.99}},
+  {n:"Impresora HP Smart Tank 530", cat:"Impresoras", b:"HP", prices:{MegaTecno:259.99}},
+  {n:"Impresora Epson EcoTank L4260", cat:"Impresoras", b:"Epson", prices:{MegaTecno:319.99}},
+  {n:"Impresora Epson EcoTank L5590", cat:"Impresoras", b:"Epson", prices:{MegaTecno:429.99}},
+  {n:"Impresora Canon Maxify GX5010", cat:"Impresoras", b:"Canon", prices:{MegaTecno:209.99}},
+  {n:"Camara Seguridad TP-Link Tapo C200", cat:"Seguridad", b:"TP-Link", prices:{MegaTecno:58.99}},
+  {n:"UPS APC Back-Ups Pro BX1500M", cat:"Energia", b:"APC", prices:{MegaTecno:299.99}},
+  {n:"UPS APC Back-Ups 2000VA", cat:"Energia", b:"APC", prices:{MegaTecno:249.99}},
+  {n:"Mesa Gaming Havit GD905", cat:"Gaming", b:"Havit", prices:{MegaTecno:199.99}},
+
+  // === IVOO (ivoo.com via GraphQL nuweapp.com - Scrapeados Ago 2026) ===
+  // TVs
+  {n:"TV TCL 32\" Android TV", cat:"Televisores", b:"TCL", prices:{IVOO:200.00}},
+  {n:"TV Soneview 32\" Google TV HD", cat:"Televisores", b:"Soneview", prices:{IVOO:170.00}},
+  {n:"TV Soneview 43\" Google TV FHD", cat:"Televisores", b:"Soneview", prices:{IVOO:264.99}},
+  {n:"TV Viotto 32\" Google TV HD", cat:"Televisores", b:"Viotto", prices:{IVOO:193.00}},
+  {n:"TV Viotto 43\" Google TV FHD", cat:"Televisores", b:"Viotto", prices:{IVOO:308.00}},
+  {n:"TV Samsung 50\" UHD Crystal", cat:"Televisores", b:"Samsung", prices:{IVOO:1060.00}},
+  {n:"TV Samsung 55\" Lifestyle Frame QLED", cat:"Televisores", b:"Samsung", prices:{IVOO:2020.00}},
+  {n:"TV Samsung 55\" OLED 4K", cat:"Televisores", b:"Samsung", prices:{IVOO:2460.00}},
+  {n:"TV Samsung 65\" Neo QLED 4K", cat:"Televisores", b:"Samsung", prices:{IVOO:2600.00}},
+  {n:"TV Siragon 58\" Google TV UHD 4K", cat:"Televisores", b:"Siragon", prices:{IVOO:500.00}},
+  {n:"TV Siragon 65\" Google TV UHD 4K", cat:"Televisores", b:"Siragon", prices:{IVOO:850.00}},
+  {n:"TV Siragon 65\" Google TV QLED+ 4K", cat:"Televisores", b:"Siragon", prices:{IVOO:810.00}},
+  {n:"TV Siragon 70\" Smart TV UHD 4K", cat:"Televisores", b:"Siragon", prices:{IVOO:980.00}},
+  {n:"TV Siragon 70\" Google TV QLED+ 4K", cat:"Televisores", b:"Siragon", prices:{IVOO:1100.00}},
+  {n:"TV Siragon 75\" Google TV UHD 4K", cat:"Televisores", b:"Siragon", prices:{IVOO:1250.00}},
+  {n:"TV Siragon 75\" Google TV QLED+ 4K", cat:"Televisores", b:"Siragon", prices:{IVOO:1300.00}},
+  {n:"TV LG 70\" Smart TV NanoCell 4K", cat:"Televisores", b:"LG", prices:{IVOO:1950.00}},
+  {n:"TV LG 65\" Smart TV QNED 4K", cat:"Televisores", b:"LG", prices:{IVOO:2460.00}},
+  {n:"TV Kenwood 65\" Google TV 4K", cat:"Televisores", b:"Kenwood", prices:{IVOO:950.00}},
+  // Neveras
+  {n:"Nevera Ejecutiva Soneview NE-3000 46L", cat:"Neveras", b:"Soneview", prices:{IVOO:170.00}},
+  {n:"Nevera Ejecutiva Siragon NE-3050 75L", cat:"Neveras", b:"Siragon", prices:{IVOO:180.00}},
+  {n:"Nevera Siragon NV-3100 211L", cat:"Neveras", b:"Siragon", prices:{IVOO:470.00}},
+  {n:"Nevera Siragon NV-3100 248L", cat:"Neveras", b:"Siragon", prices:{IVOO:600.00}},
+  {n:"Nevera Siragon NV-5350 345L", cat:"Neveras", b:"Siragon", prices:{IVOO:1000.00}},
+  {n:"Nevera Siragon NV-5400 515L", cat:"Neveras", b:"Siragon", prices:{IVOO:1100.00}},
+  {n:"Nevera TCL Side By Side 520L", cat:"Neveras", b:"TCL", prices:{IVOO:1640.00}},
+  {n:"Nevera LG 374L", cat:"Neveras", b:"LG", prices:{IVOO:1600.00}},
+  {n:"Nevera LG Side By Side 509L", cat:"Neveras", b:"LG", prices:{IVOO:2140.00}},
+  {n:"Nevera LG 768L Side By Side", cat:"Neveras", b:"LG", prices:{IVOO:3800.00}},
+  // Aires AC
+  {n:"A/C Soneview 12000BTU ASV12-5100", cat:"Aires AC", b:"Soneview", prices:{IVOO:300.00}},
+  {n:"A/C Soneview 12000BTU ASV12-3100", cat:"Aires AC", b:"Soneview", prices:{IVOO:350.00}},
+  {n:"A/C Soneview 18000BTU ASV18-3100", cat:"Aires AC", b:"Soneview", prices:{IVOO:550.00}},
+  {n:"A/C Soneview 24000BTU ASV24-3100", cat:"Aires AC", b:"Soneview", prices:{IVOO:660.00}},
+  {n:"A/C Soneview 24000BTU ASV24-5000", cat:"Aires AC", b:"Soneview", prices:{IVOO:660.00}},
+  {n:"A/C Siragon 24000BTU Split", cat:"Aires AC", b:"Siragon", prices:{IVOO:660.00}},
+  {n:"A/C Siragon Cassette 5 Ton", cat:"Aires AC", b:"Siragon", prices:{IVOO:2100.00}},
+  {n:"A/C Hotline 12000BTU Split", cat:"Aires AC", b:"Hotline", prices:{IVOO:410.00}},
+  {n:"A/C LG 24000BTU", cat:"Aires AC", b:"LG", prices:{IVOO:1330.00}},
+  // Monitores
+  {n:"Monitor Siragon 24\" FHD", cat:"Monitores", b:"Siragon", prices:{IVOO:250.00}},
+  {n:"Monitor Siragon 27\" Quad HD", cat:"Monitores", b:"Siragon", prices:{IVOO:252.00}},
+  {n:"Monitor Siragon 27\" FHD", cat:"Monitores", b:"Siragon", prices:{IVOO:312.00}},
+  {n:"Monitor Siragon Gaming 25\" FHD", cat:"Monitores", b:"Siragon", prices:{IVOO:234.00}},
+  {n:"Monitor Siragon Curvo 32\" FHD", cat:"Monitores", b:"Siragon", prices:{IVOO:400.00}},
+  {n:"Monitor Siragon Portable 16\" FHD", cat:"Monitores", b:"Siragon", prices:{IVOO:326.00}},
+  {n:"Monitor LG 20\" HD", cat:"Monitores", b:"LG", prices:{IVOO:160.00}},
+  {n:"Monitor LG 32\" QHD", cat:"Monitores", b:"LG", prices:{IVOO:580.00}},
+  {n:"Monitor Acer 24.5\" FHD", cat:"Monitores", b:"Acer", prices:{IVOO:290.00}},
+  // Audio
+  {n:"Barra de Sonido Samsung 40W", cat:"Audio", b:"Samsung", prices:{IVOO:123.00}},
+  // Impresoras
+  {n:"Impresora HP Laser Jet", cat:"Impresoras", b:"HP", prices:{IVOO:372.00}},
+  {n:"Impresora HP Jet Pro", cat:"Impresoras", b:"HP", prices:{IVOO:835.00}},
+  {n:"Impresora HP Laserjet Pro 3003DW", cat:"Impresoras", b:"HP", prices:{IVOO:440.00}},
+  {n:"Impresora HP Smart Tank 790", cat:"Impresoras", b:"HP", prices:{IVOO:665.00}},
+  // Otros
+  {n:"Silla Gaming Razer Iskur V2", cat:"Gaming", b:"Razer", prices:{IVOO:710.00}},
+  {n:"Silla Gaming Razer Enki X", cat:"Gaming", b:"Razer", prices:{IVOO:790.00}},
+  {n:"Teclado Mecanico Gaming Marvo", cat:"Gaming", b:"Marvo", prices:{IVOO:53.00}},
+];
+
+// ============================================
+// PRECIOS MANUALES (localStorage)
+// ============================================
+function getManual(){ try{return JSON.parse(localStorage.getItem('manualPrices')||'{}')}catch(e){return{}} }
+function setManual(d){ localStorage.setItem('manualPrices',JSON.stringify(d)) }
+
+function buildData(){
+  const manual=getManual();
+  return RAW.map(item=>{
+    const prices=Object.entries(item.prices).map(([t,p])=>({t,p,src:'real'}));
+    // Agregar precios manuales
+    ['SoyTechno','IVOO','Frigilux','MercadoLibre'].forEach(store=>{
+      const key=item.n+"|||"+store;
+      if(manual[key]!==undefined) prices.push({t:store,p:manual[key],src:'manual'});
+    });
+    return {n:item.n,cat:item.cat,b:item.b,prices};
+  });
+}
+
+let D=buildData();
+let F={s:'',c:'',b:'',o:'sd'};
+let charts={};
+
+function init(){
+  const cats=[...new Set(D.map(p=>p.cat))].sort();
+  const cf=document.getElementById('cf');
+  cats.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cf.appendChild(o)});
+  renderChips();renderRanking();renderStats();renderCharts();filter();populateModal();
+}
+
+function renderStats(){
+  let lbW=0,daW=0,mlW=0,mtW=0,totalManual=0;
+  const allStores=new Set();
+  D.forEach(p=>{
+    p.prices.forEach(x=>allStores.add(x.t));
+    if(p.prices.length>=2){
+      const mn=Math.min(...p.prices.map(x=>x.p));
+      const w=p.prices.find(x=>x.p===mn);
+      if(w){if(w.t==='LatinBien')lbW++;else if(w.t==='Damasco')daW++;else if(w.t==='Multimax')mlW++;else if(w.t==='MegaTecno')mtW++;}
+    }
+    totalManual+=p.prices.filter(x=>x.src==='manual').length;
+  });
+  let totSv=0,maxSv=0,cnt=0;
+  D.forEach(p=>{if(p.prices.length<2)return;const mn=Math.min(...p.prices.map(x=>x.p));const mx=Math.max(...p.prices.map(x=>x.p));const sv=mx-mn;totSv+=(sv/mx)*100;if(sv>maxSv)maxSv=sv;cnt++;});
+  const avgSv=cnt>0?totSv/cnt:0;
+  document.getElementById('sbar').innerHTML=`
+    <div class="sc"><div class="n">${D.length}</div><div class="l">Productos Totales</div></div>
+    <div class="sc"><div class="n">${allStores.size}</div><div class="l">Tiendas</div></div>
+    <div class="sc ok"><div class="n">${avgSv.toFixed(1)}%</div><div class="l">Ahorro Promedio</div></div>
+    <div class="sc warn"><div class="n">$${maxSv.toFixed(0)}</div><div class="l">Mayor Ahorro</div></div>
+    <div class="sc info"><div class="n">${lbW+daW+mlW+mtW}</div><div class="l">Comparaciones (2+ tiendas)</div></div>
+    <div class="sc"><div class="n">${totalManual}</div><div class="l">Precios Manuales</div></div>`;
+}
+
+function renderRanking(){
+  const wins={};
+  D.forEach(p=>{if(p.prices.length<2)return;const mn=Math.min(...p.prices.map(x=>x.p));const w=p.prices.find(x=>x.p===mn);if(w)wins[w.t]=(wins[w.t]||0)+1;});
+  const sorted=Object.entries(wins).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('rkg').innerHTML=sorted.map(([store,w],i)=>{
+    const cls=i===0?'g':i===1?'s':i===2?'b':'';
+      const isReal=['LatinBien','Damasco','Multimax','MegaTecno','IVOO'].includes(store);
+    return `<div class="rkc ${cls}"><div class="rn">#${i+1}</div><div class="rnm">${store}</div><div class="rs">${w} productos mas baratos</div>${isReal?'<div style="font-size:.65rem;color:var(--ok);margin-top:.3rem">✓ Scrapeado</div>':'<div style="font-size:.65rem;color:var(--warn);margin-top:.3rem">✏️ Manual</div>'}</div>`;
+  }).join('');
+}
+
+function renderCharts(){
+  const cats=[...new Set(D.map(p=>p.cat))];
+  const sc={'LatinBien':'#1a73e8','Damasco':'#ef4444','Multimax':'#f59e0b','MegaTecno':'#ec4899','SoyTechno':'#6366f1','IVOO':'#8b5cf6','Frigilux':'#0d9488','MercadoLibre':'#ffea00'};
+  const wins={};
+  D.forEach(p=>{if(p.prices.length<2)return;const mn=Math.min(...p.prices.map(x=>x.p));const w=p.prices.find(x=>x.p===mn);if(w){if(!wins[w.t])wins[w.t]={};wins[w.t][p.cat]=(wins[w.t][p.cat]||0)+1;}});
+  const topS=Object.entries(wins).map(([s,c])=>[s,Object.values(c).reduce((a,b)=>a+b,0)]).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const datasets=topS.map(([store])=>({label:store,data:cats.map(cat=>(wins[store]&&wins[store][cat])||0),backgroundColor:sc[store]||'#999'}));
+  if(charts.bar)charts.bar.destroy();
+  charts.bar=new Chart(document.getElementById('c1'),{type:'bar',data:{labels:cats,datasets},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:10}}}},scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}}}});
+  if(charts.pie)charts.pie.destroy();
+  charts.pie=new Chart(document.getElementById('c2'),{type:'doughnut',data:{labels:topS.map(x=>x[0]),datasets:[{data:topS.map(x=>x[1]),backgroundColor:topS.map(x=>sc[x[0]]||'#999')}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:10}}}}}});
+}
+
+function renderChips(){
+  const brands=[...new Set(D.map(p=>p.b))].sort();
+  document.getElementById('chips').innerHTML=brands.map(b=>`<span class="chip" onclick="tb('${b}')">${b}</span>`).join('');
+}
+function tb(b){F.b=F.b===b?'':b;document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.textContent===F.b));filter();}
+
+function filter(){
+  const s=document.getElementById('si').value.toLowerCase();
+  const c=document.getElementById('cf').value;
+  const f=document.getElementById('sf').value;
+  let prods=[...D];
+  if(s)prods=prods.filter(p=>p.n.toLowerCase().includes(s)||p.b.toLowerCase().includes(s)||p.cat.toLowerCase().includes(s)||p.prices.some(x=>x.t.toLowerCase().includes(s)));
+  if(c)prods=prods.filter(p=>p.cat===c);
+  if(f)prods=prods.filter(p=>p.prices.some(x=>x.t===f));
+  if(F.b)prods=prods.filter(p=>p.b===F.b);
+  switch(F.o){
+    case'sd':prods.sort((a,b)=>{const sa=a.prices.length>=2?Math.max(...a.prices.map(x=>x.p))-Math.min(...a.prices.map(x=>x.p)):0;const sb=b.prices.length>=2?Math.max(...b.prices.map(x=>x.p))-Math.min(...b.prices.map(x=>x.p)):0;return sb-sa});break;
+    case'sa':prods.sort((a,b)=>{const sa=a.prices.length>=2?Math.max(...a.prices.map(x=>x.p))-Math.min(...a.prices.map(x=>x.p)):0;const sb=b.prices.length>=2?Math.max(...b.prices.map(x=>x.p))-Math.min(...b.prices.map(x=>x.p)):0;return sa-sb});break;
+    case'pa':prods.sort((a,b)=>Math.min(...a.prices.map(x=>x.p))-Math.min(...b.prices.map(x=>x.p)));break;
+    case'pd':prods.sort((a,b)=>Math.max(...b.prices.map(x=>x.p))-Math.max(...a.prices.map(x=>x.p)));break;
+    case'nm':prods.sort((a,b)=>a.n.localeCompare(b.n));break;
+    case'ta':prods.sort((a,b)=>b.prices.length-a.prices.length);break;
+    case'td':prods.sort((a,b)=>a.prices.length-b.prices.length);break;
+  }
+  render(prods);
+}
+
+function render(prods){
+  const g=document.getElementById('grid');
+  const nr=document.getElementById('nr');
+  if(!prods.length){g.innerHTML='';nr.style.display='block';return}
+  nr.style.display='none';
+  const allStores=['LatinBien','Damasco','Multimax','MegaTecno','IVOO','SoyTechno','Frigilux','MercadoLibre'];
+  g.innerHTML=prods.map(p=>{
+    const prices=[...p.prices].sort((a,b)=>a.p-b.p);
+    const mn=prices[0].p,mx=prices[prices.length-1].p;
+    const sv=mx-mn,pct=prices.length>=2?(sv/mx)*100:0;
+    let badge='';
+    if(prices.length>=2){
+      const winner=prices[0].t;
+      const realStores=['LatinBien','Damasco','Multimax','MegaTecno','IVOO'];
+      if(realStores.includes(winner))badge='<span class="bdg best">MEJOR PRECIO</span>';
+      else badge='<span class="bdg good">MEJOR PRECIO (manual)</span>';
+    }
+    const rows=prices.map(pp=>{
+      let cls='pr';
+      if(pp.src==='manual')cls+=' manual';
+      if(pp.p===mn)cls+=' best';
+      if(pp.p===mx&&prices.length>1)cls+=' worst';
+      const icon=pp.src==='real'?' ✓':'';
+      return `<div class="${cls}"><span class="st">${pp.t}${icon}</span><span class="p">$${pp.p.toFixed(2)}</span></div>`;
+    }).join('');
+    const missing=allStores.filter(s=>!p.prices.find(x=>x.t===s));
+    const missingRows=missing.slice(0,3).map(s=>`<div class="pr empty"><span class="st">${s}</span><span class="p" style="color:var(--warn);font-size:.8rem">Ingresa ✏️</span></div>`).join('');
+    return `<div class="pc"><div class="chd"><div><div class="nm">${p.n}</div><div class="ct">${p.cat} | ${p.b}</div></div>${badge}</div>
+<div class="cb">${rows}${missingRows}
+${prices.length>=2?`<div class="sv"><span class="pct ${pct>15?'pos':pct<5?'neu':'pos'}">Ahorro: ${pct.toFixed(1)}% ($${sv.toFixed(2)})</span><span class="dt">${prices.length} tiendas</span></div>`:`<div class="sv"><span class="pct neu">1 tienda</span><span class="dt">Ingresa mas precios ✏️</span></div>`}
+</div>
+<div class="cf"><span>Mejor: $${mn.toFixed(2)}</span><span>Peor: $${mx.toFixed(2)}</span></div></div>`;
+  }).join('');
+}
+
+// MODAL
+function populateModal(){
+  const sel=document.getElementById('mProduct');
+  sel.innerHTML=RAW.filter(item=>{
+    const hasManual=['SoyTechno','Frigilux','MercadoLibre'].some(s=>item.prices[s]===undefined);
+    return hasManual;
+  }).map(item=>`<option value="${item.n}">${item.n}</option>`).join('');
+}
+function openModal(){document.getElementById('modalOverlay').classList.add('active')}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('active')}
+function saveManual(){
+  const product=document.getElementById('mProduct').value;
+  const store=document.getElementById('mStore').value;
+  const price=parseFloat(document.getElementById('mPrice').value);
+  if(!product||!store||isNaN(price)||price<=0){alert('Selecciona producto, tienda y precio valido');return}
+  const manual=getManual();
+  manual[product+"|||"+store]=price;
+  setManual(manual);
+  D=buildData();renderRanking();renderStats();renderCharts();filter();
+  document.getElementById('mPrice').value='';closeModal();
+}
+function clearAllManual(){
+  if(confirm('Borrar TODOS los precios manuales?')){
+    localStorage.removeItem('manualPrices');
+    D=buildData();renderRanking();renderStats();renderCharts();filter();closeModal();
+  }
+}
+document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
