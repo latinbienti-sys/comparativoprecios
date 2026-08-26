@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Estudio de Mercado - Precios Merida, Venezuela</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{--p:#1a73e8;--pd:#0d47a1;--pl:#4a90d9;--ok:#0d9488;--warn:#f59e0b;--bad:#ef4444;--info:#6366f1;--bg:#f0f4f8;--card:#fff;--t:#1e293b;--m:#64748b;--b:#e2e8f0;--gold:#D4A017;--silver:#A8A8A8;--bronze:#CD7F32}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -148,7 +149,50 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 <div class="ft"><p><strong>Estudio de Mercado Merida</strong> | Precios reales scrapeados - Ago 2026</p><p>Precios en USD. LatinBien, Damasco, Multimax, MegaTecno e IVOO scrapeados directamente. SoyTechno, Frigilux y MercadoLibre: precios manuales.</p></div>
 
 <button class="fab" onclick="openModal()" title="Ingresar precios manualmente">✏️</button>
+<button class="fab" style="bottom:6rem;background:linear-gradient(135deg,#059669,#10b981)" onclick="openUploadModal()" title="Cargar precios desde Excel/CSV">📊</button>
 
+<!-- Modal Carga Masiva Excel/CSV -->
+<div class="modal-overlay" id="uploadOverlay">
+<div class="modal">
+<h2>📊 Cargar Precios Masivamente</h2>
+<p class="sub">Sube un archivo Excel (.xlsx) o CSV con los precios de las tiendas</p>
+
+<div style="background:#f0fdf4;border:2px dashed #059669;border-radius:10px;padding:1.5rem;text-align:center;margin:1rem 0">
+  <div style="font-size:2rem;margin-bottom:.5rem">📁</div>
+  <p style="font-size:.9rem;color:#065f46;font-weight:600">Arrastra tu archivo aqui o haz clic para seleccionar</p>
+  <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFile(event)">
+  <button onclick="document.getElementById('fileInput').click()" style="margin-top:.8rem;padding:.6rem 1.2rem;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600">Seleccionar Archivo</button>
+</div>
+
+<div id="fileInfo" style="display:none;background:#f8fafc;border-radius:8px;padding:1rem;margin:1rem 0">
+  <div style="font-weight:600;color:var(--p)" id="fileName"></div>
+  <div style="font-size:.8rem;color:var(--m)" id="fileStats"></div>
+</div>
+
+<div id="previewSection" style="display:none;margin:1rem 0">
+  <h4 style="font-size:.9rem;color:var(--t);margin-bottom:.5rem">Vista previa:</h4>
+  <div id="previewTable" style="max-height:200px;overflow-y:auto;border:1px solid var(--b);border-radius:8px;font-size:.8rem"></div>
+</div>
+
+<div style="background:#eff6ff;border-radius:8px;padding:1rem;margin:1rem 0">
+  <h4 style="font-size:.85rem;color:var(--p);margin-bottom:.5rem">📋 Formato esperado del archivo:</h4>
+  <table style="width:100%;font-size:.75rem;border-collapse:collapse">
+    <tr style="background:#dbeafe;font-weight:600"><td style="padding:.3rem;border:1px solid #93c5fd">Producto</td><td style="padding:.3rem;border:1px solid #93c5fd">Tienda</td><td style="padding:.3rem;border:1px solid #93c5fd">Precio</td></tr>
+    <tr><td style="padding:.3rem;border:1px solid #e2e8f0">iPhone 17 Pro Max 256GB</td><td style="padding:.3rem;border:1px solid #e2e8f0">SoyTechno</td><td style="padding:.3rem;border:1px solid #e2e8f0">2100.00</td></tr>
+    <tr><td style="padding:.3rem;border:1px solid #e2e8f0">Samsung Galaxy A16</td><td style="padding:.3rem;border:1px solid #e2e8f0">MercadoLibre</td><td style="padding:.3rem;border:1px solid #e2e8f0">220.00</td></tr>
+  </table>
+  <p style="font-size:.75rem;color:var(--m);margin-top:.5rem">* El nombre del producto debe coincidir (o ser similar) al nombre en el dashboard</p>
+</div>
+
+<div class="btns">
+  <button class="cancel" onclick="closeUploadModal()">Cancelar</button>
+  <button class="save" id="applyBtn" onclick="applyUploadedPrices()" disabled style="opacity:.5">Aplicar Precios</button>
+</div>
+<button class="clear" onclick="clearUploaded()">🗑️ Borrar precios cargados</button>
+</div>
+</div>
+
+<!-- Modal Precio Manual -->
 <div class="modal-overlay" id="modalOverlay">
 <div class="modal">
 <h2>✏️ Ingresar Precio Manual</h2>
@@ -553,6 +597,173 @@ ${prices.length>=2?`<div class="sv"><span class="pct ${pct>15?'pos':pct<5?'neu':
   }).join('');
 }
 
+// MODAL CARGA MASIVA
+let uploadedData = null;
+
+function openUploadModal(){document.getElementById('uploadOverlay').classList.add('active')}
+function closeUploadModal(){document.getElementById('uploadOverlay').classList.remove('active');uploadedData=null;document.getElementById('previewSection').style.display='none';document.getElementById('fileInfo').style.display='none';document.getElementById('applyBtn').disabled=true;document.getElementById('applyBtn').style.opacity='.5'}
+
+function handleFile(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  
+  document.getElementById('fileName').textContent = file.name;
+  document.getElementById('fileInfo').style.display = 'block';
+  
+  const ext = file.name.split('.').pop().toLowerCase();
+  
+  if(ext === 'csv') {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const text = e.target.result;
+      parseCSV(text);
+    };
+    reader.readAsText(file);
+  } else if(ext === 'xlsx' || ext === 'xls') {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, {type:'array'});
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header:1});
+        parseExcelData(jsonData);
+      } catch(err) {
+        alert('Error al leer el archivo Excel: ' + err.message);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    alert('Formato no soportado. Usa .xlsx, .xls o .csv');
+  }
+}
+
+function parseCSV(text) {
+  const lines = text.split('\n').filter(l=>l.trim());
+  const data = [];
+  for(let i=0; i<lines.length; i++) {
+    const cols = lines[i].split(',').map(c=>c.trim().replace(/^"|"$/g,''));
+    if(i===0 && (cols[0].toLowerCase().includes('producto') || cols[0].toLowerCase().includes('product'))) continue; // skip header
+    if(cols.length >= 3 && cols[2]) {
+      const price = parseFloat(cols[2].replace(/[^0-9.,]/g,'').replace(',','.'));
+      if(!isNaN(price) && price > 0) {
+        data.push({product: cols[0], store: cols[1], price: price});
+      }
+    }
+  }
+  processUploadedData(data);
+}
+
+function parseExcelData(jsonData) {
+  const data = [];
+  for(let i=0; i<jsonData.length; i++) {
+    const row = jsonData[i];
+    if(!row || row.length < 3) continue;
+    if(i===0 && (String(row[0]).toLowerCase().includes('producto') || String(row[0]).toLowerCase().includes('product'))) continue;
+    const price = parseFloat(String(row[2]).replace(/[^0-9.,]/g,'').replace(',','.'));
+    if(!isNaN(price) && price > 0) {
+      data.push({product: String(row[0]).trim(), store: String(row[1]).trim(), price: price});
+    }
+  }
+  processUploadedData(data);
+}
+
+function processUploadedData(data) {
+  if(data.length === 0) {
+    alert('No se encontraron precios validos en el archivo');
+    return;
+  }
+  uploadedData = data;
+  
+  document.getElementById('fileStats').textContent = `${data.length} precios encontrados de ${[...new Set(data.map(d=>d.store))].length} tiendas`;
+  
+  // Preview table
+  let html = '<table style="width:100%;border-collapse:collapse;font-size:.75rem">';
+  html += '<tr style="background:#f1f5f9;font-weight:600"><td style="padding:.4rem;border:1px solid #e2e8f0">Producto</td><td style="padding:.4rem;border:1px solid #e2e8f0">Tienda</td><td style="padding:.4rem;border:1px solid #e2e8f0">Precio</td><td style="padding:.4rem;border:1px solid #e2e8f0">Match</td></tr>';
+  
+  data.slice(0,15).forEach(d => {
+    const match = findBestMatch(d.product);
+    const matchClass = match ? 'color:#065f46' : 'color:#991b1b';
+    const matchText = match ? match.n : 'Sin match';
+    html += `<tr><td style="padding:.3rem;border:1px solid #e2e8f0">${d.product}</td><td style="padding:.3rem;border:1px solid #e2e8f0">${d.store}</td><td style="padding:.3rem;border:1px solid #e2e8f0">$${d.price.toFixed(2)}</td><td style="padding:.3rem;border:1px solid #e2e8f0;${matchClass};font-size:.7rem">${matchText}</td></tr>`;
+  });
+  if(data.length > 15) html += `<tr><td colspan="4" style="padding:.3rem;text-align:center;color:#64748b">... y ${data.length - 15} mas</td></tr>`;
+  html += '</table>';
+  
+  document.getElementById('previewTable').innerHTML = html;
+  document.getElementById('previewSection').style.display = 'block';
+  document.getElementById('applyBtn').disabled = false;
+  document.getElementById('applyBtn').style.opacity = '1';
+}
+
+function findBestMatch(searchName) {
+  const search = searchName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  let bestScore = 0, bestMatch = null;
+  
+  RAW.forEach(item => {
+    const name = item.n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    // Exact match
+    if(name === search) { bestScore = 100; bestMatch = item; return; }
+    // Contains
+    if(name.includes(search) || search.includes(name)) { if(90 > bestScore) { bestScore = 90; bestMatch = item; return; } }
+    // Word match
+    const searchWords = search.split(/\s+/);
+    const nameWords = name.split(/\s+/);
+    const common = searchWords.filter(w => nameWords.some(nw => nw.includes(w) || w.includes(nw)));
+    const score = (common.length / Math.max(searchWords.length, nameWords.length)) * 80;
+    if(score > bestScore && score > 30) { bestScore = score; bestMatch = item; }
+  });
+  
+  return bestScore > 30 ? bestMatch : null;
+}
+
+function applyUploadedData(data) {
+  const manual = getManual();
+  let applied = 0, notFound = 0;
+  const notFoundList = [];
+  
+  data.forEach(d => {
+    const match = findBestMatch(d.product);
+    if(match) {
+      const key = match.n + "|||" + d.store;
+      manual[key] = d.price;
+      applied++;
+    } else {
+      notFound++;
+      notFoundList.push(d.product);
+    }
+  });
+  
+  setManual(manual);
+  D = buildData();
+  renderRanking();
+  renderStats();
+  renderCharts();
+  filter();
+  
+  let msg = `✅ ${applied} precios aplicados`;
+  if(notFound > 0) msg += `\n\n❌ ${notFound} sin match:\n${notFoundList.slice(0,10).join('\n')}`;
+  alert(msg);
+  closeUploadModal();
+}
+
+function applyUploadedPrices() {
+  if(!uploadedData) return;
+  applyUploadedData(uploadedData);
+}
+
+function clearUploaded() {
+  if(confirm('Borrar TODOS los precios manuales cargados?')) {
+    localStorage.removeItem('manualPrices');
+    D = buildData();
+    renderRanking();
+    renderStats();
+    renderCharts();
+    filter();
+    closeUploadModal();
+  }
+}
+
 // MODAL
 function populateModal(){
   const sel=document.getElementById('mProduct');
@@ -581,6 +792,7 @@ function clearAllManual(){
   }
 }
 document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
+document.getElementById('uploadOverlay').addEventListener('click',function(e){if(e.target===this)closeUploadModal()});
 document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
